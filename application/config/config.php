@@ -24,9 +24,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 //$config['base_url'] = 'http://localhost/absen';
-
+//$config['base_url'] = 'http://localhost/absensi';
 $config['base_url'] = 'https://absensi.mtsn11majalengka.sch.id';
-//$config['base_url'] = 'http://localhost/';
+//$config['base_url'] = 'https://coba:8890/';
 
 
 
@@ -382,77 +382,25 @@ $config['encryption_key'] = '';
 | except for 'cookie_prefix' and 'cookie_httponly', which are ignored here.
 |
 */
-$config['sess_driver'] = 'files';
+$config['sess_driver'] = 'database';  // Ganti dari 'files' ke 'database'
 $config['sess_cookie_name'] = 'ci_session';
 $config['sess_expiration'] = 7200;
-$config['sess_save_path'] = APPPATH . 'cache';
+$config['sess_save_path'] = 'ci_sessions'; // Nama tabel di database
 $config['sess_match_ip'] = FALSE;
 $config['sess_time_to_update'] = 300;
 $config['sess_regenerate_destroy'] = FALSE;
 
-/*
-|--------------------------------------------------------------------------
-| Cookie Related Variables
-|--------------------------------------------------------------------------
-|
-| 'cookie_prefix'   = Set a cookie name prefix if you need to avoid collisions
-| 'cookie_domain'   = Set to .your-domain.com for site-wide cookies
-| 'cookie_path'     = Typically will be a forward slash
-| 'cookie_secure'   = Cookie will only be set if a secure HTTPS connection exists.
-| 'cookie_httponly' = Cookie will only be accessible via HTTP(S) (no javascript)
-|
-| Note: These settings (with the exception of 'cookie_prefix' and
-|       'cookie_httponly') will also affect sessions.
-|
-*/
+
 $config['cookie_prefix']	= '';
 $config['cookie_domain']	= '';
 $config['cookie_path']		= '/';
 $config['cookie_secure']	= FALSE;
 $config['cookie_httponly'] 	= FALSE;
 
-/*
-|--------------------------------------------------------------------------
-| Standardize newlines
-|--------------------------------------------------------------------------
-|
-| Determines whether to standardize newline characters in input data,
-| meaning to replace \r\n, \r, \n occurrences with the PHP_EOL value.
-|
-| WARNING: This feature is DEPRECATED and currently available only
-|          for backwards compatibility purposes!
-|
-*/
 $config['standardize_newlines'] = FALSE;
 
-/*
-|--------------------------------------------------------------------------
-| Global XSS Filtering
-|--------------------------------------------------------------------------
-|
-| Determines whether the XSS filter is always active when GET, POST or
-| COOKIE data is encountered
-|
-| WARNING: This feature is DEPRECATED and currently available only
-|          for backwards compatibility purposes!
-|
-*/
 $config['global_xss_filtering'] = FALSE;
 
-/*
-|--------------------------------------------------------------------------
-| Cross Site Request Forgery
-|--------------------------------------------------------------------------
-| Enables a CSRF cookie token to be set. When set to TRUE, token will be
-| checked on a submitted form. If you are accepting user data, it is strongly
-| recommended CSRF protection be enabled.
-|
-| 'csrf_token_name' = The token name
-| 'csrf_cookie_name' = The cookie name
-| 'csrf_expire' = The number in seconds the token should expire.
-| 'csrf_regenerate' = Regenerate token on every submission
-| 'csrf_exclude_uris' = Array of URIs which ignore CSRF checks
-*/
 $config['csrf_protection'] = FALSE;
 $config['csrf_token_name'] = 'csrf_test_name';
 $config['csrf_cookie_name'] = 'csrf_cookie_name';
@@ -460,39 +408,8 @@ $config['csrf_expire'] = 7200;
 $config['csrf_regenerate'] = TRUE;
 $config['csrf_exclude_uris'] = array();
 
-/*
-|--------------------------------------------------------------------------
-| Output Compression
-|--------------------------------------------------------------------------
-|
-| Enables Gzip output compression for faster page loads.  When enabled,
-| the output class will test whether your server supports Gzip.
-| Even if it does, however, not all browsers support compression
-| so enable only if you are reasonably sure your visitors can handle it.
-|
-| Only used if zlib.output_compression is turned off in your php.ini.
-| Please do not use it together with httpd-level output compression.
-|
-| VERY IMPORTANT:  If you are getting a blank page when compression is enabled it
-| means you are prematurely outputting something to your browser. It could
-| even be a line of whitespace at the end of one of your scripts.  For
-| compression to work, nothing can be sent before the output buffer is called
-| by the output class.  Do not 'echo' any values with compression enabled.
-|
-*/
 $config['compress_output'] = FALSE;
 
-/*
-|--------------------------------------------------------------------------
-| Master Time Reference
-|--------------------------------------------------------------------------
-|
-| Options are 'local' or any PHP supported timezone. This preference tells
-| the system whether to use your server's local time as the master 'now'
-| reference, or convert it to the configured one timezone. See the 'date
-| helper' page of the user guide for information regarding date handling.
-|
-*/
 $config['time_reference'] = 'local';
 
 /*
@@ -526,3 +443,4 @@ $config['rewrite_short_tags'] = FALSE;
 | Array:		array('10.0.1.200', '192.168.5.0/24')
 */
 $config['proxy_ips'] = '';
+

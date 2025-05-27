@@ -52,7 +52,7 @@ class Cardcontroller extends CI_Controller {
         $generator = new BarcodeGeneratorPNG();
     
         foreach ($students as $student) {
-            $barcode = base64_encode($generator->getBarcode($student->nisn, $generator::TYPE_CODE_128));
+            $barcode = base64_encode($generator->getBarcode($student->uid, $generator::TYPE_CODE_128));
             $data[] = [
                 'student' => $student,
                 'barcode' => $barcode

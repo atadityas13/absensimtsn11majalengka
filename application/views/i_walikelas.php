@@ -57,9 +57,16 @@ if ($set=="list-walikelas") {
                   <td><?php echo $row->nama;?></td>
                  
                   <td>
-                    <a href="<?=base_url()?>walikelas/edit_walikelas/<?=$row->id_walikelas?>" class="btn btn-success"><i class="fa fa-pencil"></i></a>
-                    <a href="<?=base_url()?>walikelas/hapus_walikelas/<?=$row->id_walikelas?>" class="btn btn-danger" onclick="return confirm('Anda Yakin menghapus data ini?')"><i class="fa fa-trash-o"></i></a>
-                  </td>
+                  <div class="btn-group mt-0 m-b-10">
+                                                            <button type="button" class="btn btn-info btn-raised dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Aksi</button>
+                                                            <div class="dropdown-menu">
+                                                                <a class="dropdown-item" href="<?=base_url()?>walikelas/edit_walikelas/<?=$row->id_walikelas?>">Edit Walikelas</a>
+                                                                <div class="dropdown-divider"></div>
+                                                                <a class="dropdown-item" href="<?=base_url()?>walikelas/hapus_walikelas/<?=$row->id_walikelas?>">Hapus Walikelas</a>
+                                                            </div>
+                                                        </div><!-- /btn-group -->
+                </td>
+                  
                 </tr>
                 <?php }}?>
                         </tbody>

@@ -20,8 +20,8 @@
                 <div class="col-sm-12">
                     <div class="card m-b-30">
                         <div class="card-body text-center">
-                            <img src="<?=base_url();?>assets/images/logo.png" alt="School Logo" style="max-width: 150px; margin-bottom: 20px;">
-                            <h1 class="card-title">SELAMAT DATANG DI APLIKASI ADMINISTRASI ATTENDACE SYSTEM TERBARU</h1>
+                            <img src="<?php echo base_url(get_settings('logo_path')); ?>" alt="School mts7" style="max-width: 150px; margin-bottom: 20px;">
+                            <h1 class="card-title">SELAMAT DATANG DI<?php echo get_settings('app_name'); ?></h1>
                         </div>
                     </div>
                 </div>

@@ -9,7 +9,7 @@
     <meta content="Mannatthemes" name="author" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <link rel="shortcut icon" href="<?=base_url();?>assets/images/logo.png">
+    <link rel="shortcut icon" href="<?=base_url();?>assets/images/mts7.png">
 
     <link href="<?=base_url();?>assets/plugins/animate/animate.css" rel="stylesheet" type="text/css">
     <link href="<?=base_url();?>assets/css/bootstrap-material-design.min.css" rel="stylesheet" type="text/css">
@@ -30,7 +30,7 @@
                                 <!-- Login Form -->
                                 <div class="text-center pt-3">
                                     <a href="index.html">
-                                        <img src="<?=base_url();?>assets/images/logo.png" alt="logo" height="200" />
+                                        <img src="<?php echo base_url(get_settings('logo_path')); ?>" alt="logo" height="200" />
                                     </a>
                                 </div>
                                 <div class="px-3 pb-3">
@@ -38,7 +38,7 @@
                                     <form class="form-horizontal m-t-20 mb-0" action="<?=base_url();?>log/logincheck" method="post">
                                         <div class="form-group row">
                                             <div class="col-12">
-                                                <input name="nuptk" type="text" class="form-control" placeholder="NUPTK">
+                                                <input name="nuptk" type="text" class="form-control" placeholder="NIP">
                                             </div>
                                         </div>
                                         <div class="form-group row">

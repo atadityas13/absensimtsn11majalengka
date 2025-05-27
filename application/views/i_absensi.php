@@ -5,7 +5,6 @@ if ($set == "absensi") {
 ?>
     <div class="page-content-wrapper">
         <div class="container-fluid">
-
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
@@ -39,7 +38,6 @@ if ($set == "absensi") {
                                         <th>Waktu</th>
                                     </tr>
                                 </thead>
-
                                 <tbody>
                                     <?php if (empty($absensimasuk)): ?>
                                         <tr>
@@ -83,7 +81,6 @@ if ($set == "absensi") {
                                         <th>Waktu</th>
                                     </tr>
                                 </thead>
-
                                 <tbody>
                                     <?php if (empty($absensikeluar)): ?>
                                         <tr>
@@ -116,55 +113,6 @@ if ($set == "absensi") {
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<script>
-    function fetchAbsensiData() {
-        $.ajax({
-            url: '<?= site_url('absensi/fetch_data'); ?>',
-            type: 'GET',
-            dataType: 'json',
-            success: function (response) {
-                var absensiMasukTable = $('#absensiMasukTable tbody');
-                absensiMasukTable.empty();
-                if (response.absensimasuk.length > 0) {
-                    $.each(response.absensimasuk, function (index, item) {
-                        absensiMasukTable.append('<tr>' +
-                            '<td><b class="text-success">' + (index + 1) + '</b></td>' +
-                            '<td>' + item.nama_devices + ' (' + item.id_devices + ')</td>' +
-                            '<td>' + item.nama + '</td>' +
-                            '<td>' + (item.kelas ? item.kelas : "-") + '</td>' +
-                            '<td>' + item.keterangan + '</td>' +
-                            '<td>' + new Date(item.created_at * 1000).toLocaleString() + '</td>' +
-                            '</tr>');
-                    });
-                } else {
-                    absensiMasukTable.append('<tr><td colspan="6">Data tidak ditemukan</td></tr>');
-                }
-
-                var absensiKeluarTable = $('#absensiKeluarTable tbody');
-                absensiKeluarTable.empty();
-                if (response.absensikeluar.length > 0) {
-                    $.each(response.absensikeluar, function (index, item) {
-                        absensiKeluarTable.append('<tr>' +
-                            '<td><b class="text-success">' + (index + 1) + '</b></td>' +
-                            '<td>' + item.nama_devices + ' (' + item.id_devices + ')</td>' +
-                            '<td>' + item.nama + '</td>' +
-                            '<td>' + (item.kelas ? item.kelas : "-") + '</td>' +
-                            '<td>' + item.keterangan + '</td>' +
-                            '<td>' + new Date(item.created_at * 1000).toLocaleString() + '</td>' +
-                            '</tr>');
-                    });
-                } else {
-                    absensiKeluarTable.append('<tr><td colspan="6">Data tidak ditemukan</td></tr>');
-                }
-            },
-            error: function (xhr, status, error) {
-                console.log("Error occurred while fetching absensi data:", error);
-            }
-        });
-    }
-
-    setInterval(fetchAbsensiData, 5000);
-</script>
 
 <?php
 $this->load->view('include/footer.php');

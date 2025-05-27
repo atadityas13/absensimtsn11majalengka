@@ -43,13 +43,13 @@
     <div class="min-h-screen flex items-center justify-center bg-gray-100 py-2 px-4 sm:px-6 lg:px-8">
         <div class="w-full max-w-md bg-white shadow-lg rounded-xl overflow-hidden">
             <div class="p-6 sm:p-4 bg-custom-purple text-white">
-                <h1 class="text-2xl sm:text-xl font-bold">SISTEM INFORMASI ABSENSI TEPAT AKURAT</h1>
+                <h1 class="text-2xl sm:text-xl font-bold"><?php echo get_settings('app_name'); ?></h1>
                 <p class="text-xl sm:text-lg mt-2">Silahkan Daftar</p>
             </div>
 
             <div class="p-6 sm:p-4">
                 <div class="text-center pt-3 pb-4">
-                    <img src="<?= base_url(); ?>assets/images/logogisaka.png" alt="logo" class="h-20 mx-auto">
+                    <img src="<?php echo base_url(get_settings('logo_path')); ?>" alt="logo" class="h-20 mx-auto">
                 </div>
 
                 <?php if ($is_success): ?>
@@ -88,12 +88,9 @@
                             </div>
                             <div>
                                 <label for="nisn" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-1">NISN:</label>
-                                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="nisn" id="nisn" required placeholder="Contoh: 1212838392">
+                                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="number" name="nisn" id="nisn" required placeholder="Contoh: 1212838392">
                             </div>
-                            <div>
-                                <label for="nik" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-1">NIK:</label>
-                                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="number" name="nik" id="nik" required placeholder="Contoh: 1212838392">
-                            </div>
+                            
                             <div>
                                 <label for="alamat" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-1">Alamat:</label>
                                 <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="alamat" id="alamat" required placeholder="Contoh: Desa Cibeureum, Kec. Talaga, Kab. Majalengka">
@@ -117,6 +114,11 @@
             </div>
         </div>
     </div>
+
+
+    
 </body>
 
 </html>
+
+

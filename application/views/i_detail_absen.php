@@ -17,7 +17,7 @@ if($this->session->userdata('userlogin'))
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
-        <title>Rekapitulasi Absensi  <?php echo $kelas->kelas; ?></title>
+        <title>Rekapitulasi Presensi  Kelas <?php echo $kelas->kelas; ?> | <?php echo get_settings('school_name'); ?></title>
         <meta content="Admin Dashboard" name="description" />
         <meta content="Mannatthemes" name="author" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -68,135 +68,151 @@ if($this->session->userdata('userlogin'))
 <div class="topbar-left">
     <div class="text-center">
         <a href="<?= base_url(); ?>dashboard" class="logo">
-            <img src="<?php echo base_url(); ?>assets/images/logogisaka.png" alt="Logo" style="height: 40px;"> 
+            <img src="<?php echo base_url(get_settings('logo_path')); ?>" alt="Logo" style="height: 40px;"> 
            
         </a>
     </div>
 </div>
 
 
-                <div class="sidebar-inner slimscrollleft" id="sidebar-main">
-
-                    <div id="sidebar-menu">
-                        <ul>
-                           
-                    
-                           
+<!-- Sidebar Menu -->
+<div class="sidebar-inner slimscrollleft" id="sidebar-main">
+                <div id="sidebar-menu">
+                    <ul>
                         <li>
-                                <a href="<?=base_url();?>dashboard" class="waves-effect">
-                                    <i class="mdi mdi-view-dashboard"></i>
-                                    <span> Dashboard</span>
-                                </a>
-                            </li>
-                            <li class="has_sub">
-                                <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-file"></i> <span> Data </span> <span class="float-right"><i class="mdi mdi-chevron-right"></i></span></a>
-                                <ul class="list-unstyled">
-                                    <li>
-                                        <a href="<?=base_url();?>kelas" class="waves-effect">
-                                            <i class="ti-home"></i>
-                                            <span>Kelas</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="<?=base_url();?>walikelas/list_walikelas" class="waves-effect">
-                                            <i class="mdi mdi-account-box"></i>
-                                            <span>Wali Kelas</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="<?=base_url();?>siswa" class="waves-effect">
-                                            <i class="mdi mdi-account"></i>
-                                            <span>Siswa</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="<?=base_url();?>siswa/siswanew" class="waves-effect">
-                                            <i class="mdi mdi-access-point"></i>
-                                            <span>siswa</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            
-                            <li class="has_sub">
-                                <a href="javascript:void(0);" class="waves-effect"><i class="fa fa-calendar"></i> <span> Absensi </span> <span class="float-right"><i class="mdi mdi-chevron-right"></i></span></a>
-                                <ul class="list-unstyled">
-                            <li>
-                                <a href="<?=base_url();?>absensi" class="waves-effect">
-                                    <i class="mdi mdi-account-check"></i>
-                                    <span>Riwayat Kehadiran</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="<?=base_url();?>alfa" class="waves-effect">
-                                    <i class="mdi mdi-account-remove"></i>
-                                    <span>Alpa</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="<?=base_url();?>izin" class="waves-effect">
-                                    <i class="mdi mdi-hospital"></i>
-                                    <span>Perizinan</span>
-                                </a>
-                            </li>
+                            <a href="<?= base_url() ?>dashboard" class="waves-effect">
+                                <i class="mdi mdi-view-dashboard"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
 
+                        <!-- Data Menu -->
+                        <li class="has_sub">
+                            <a href="javascript:void(0);" class="waves-effect">
+                                <i class="mdi mdi-file"></i>
+                                <span>Data</span>
+                                <span class="float-right"><i class="mdi mdi-chevron-right"></i></span>
+                            </a>
+                            <ul class="list-unstyled">
+                                <li>
+                                    <a href="<?= base_url() ?>kelas">
+                                        <i class="ti-home"></i>
+                                        <span>Kelas</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="<?= base_url() ?>walikelas/list_walikelas">
+                                        <i class="mdi mdi-account-box"></i>
+                                        <span>Wali Kelas</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="<?= base_url() ?>siswa">
+                                        <i class="mdi mdi-account"></i>
+                                        <span>Siswa</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="<?= base_url() ?>card/cetak_kartu">
+                                        <i class="mdi mdi-account-card-details"></i>
+                                        <span>Cetak Kartu</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="<?= base_url() ?>siswa/siswanew">
+                                        <i class="mdi mdi-access-point"></i>
+                                        <span>RFID</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
 
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="<?=base_url();?>absensi" class="waves-effect">
-                                    <i class="mdi mdi-qrcode-scan"></i>
-                                    <span>Absensi Barcode</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="<?=base_url();?>histori" class="waves-effect">
-                                    <i class="mdi mdi-history"></i>
-                                    <span> Histori Alat </span>
-                                </a>
-                           
-                            <li class="has_sub">
-                                <a href="javascript:void(0);" class="waves-effect"><i class="fa fa-cog"></i> <span> Pengaturan </span> <span class="float-right"><i class="mdi mdi-chevron-right"></i></span></a>
-                                <ul class="list-unstyled">
-                            <li>
-                                <a href="<?=base_url();?>users" class="waves-effect">
-                                    <i class="mdi mdi-account-key"></i>
-                                    <span> Admin </span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="<?=base_url();?>devices" class="waves-effect">
-                                    <i class="mdi mdi-xaml"></i>
-                                    <span> Device </span>
-                                </a>
-                            <li>
-                                <a href="<?=base_url();?>kampus" class="waves-effect">
-                                    <i class="mdi mdi-access-point"></i>
-                                    <span> Access Point </span>
-                                </a>
-                            </li>
-                                <a href="<?=base_url();?>setting" class="waves-effect">
-                                    <i class="mdi mdi-camera-timer"></i>
-                                    <span> Waktu Oprasional </span>
-                                </a>
-                            </li>   
-                            <li>
-                                <a href="<?=base_url();?>sql" class="waves-effect">
-                                    <i class="mdi mdi-linux"></i>
-                                    <span> SQL Command</span>
-                                </a>
-                            </li>
+                        <!-- Absensi Menu -->
+                        <li class="has_sub">
+                            <a href="javascript:void(0);" class="waves-effect">
+                                <i class="fa fa-calendar"></i>
+                                <span>Absensi</span>
+                                <span class="float-right"><i class="mdi mdi-chevron-right"></i></span>
+                            </a>
+                            <ul class="list-unstyled">
+                                <li>
+                                    <a href="<?= base_url() ?>absensi">
+                                        <i class="mdi mdi-account-check"></i>
+                                        <span>Riwayat Kehadiran</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="<?= base_url() ?>alfa">
+                                        <i class="mdi mdi-account-remove"></i>
+                                        <span>Alpa</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="<?= base_url() ?>izin">
+                                        <i class="mdi mdi-hospital"></i>
+                                        <span>Perizinan</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
 
-                                </ul>
-                            </li>
-
-                        </ul>
-                    </div>
-                    <div class="clearfix"></div>
+                        <!-- Pengaturan Menu -->
+                        <li class="has_sub">
+                            <a href="javascript:void(0);" class="waves-effect">
+                                <i class="fa fa-cog"></i>
+                                <span>Pengaturan</span>
+                                <span class="float-right"><i class="mdi mdi-chevron-right"></i></span>
+                            </a>
+                            <ul class="list-unstyled">
+                                <li>
+                                    <a href="<?= base_url() ?>users">
+                                        <i class="mdi mdi-account-key"></i>
+                                        <span>Admin</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="<?= base_url() ?>devices">
+                                        <i class="mdi mdi-xaml"></i>
+                                        <span>Device</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="<?= base_url() ?>setting">
+                                        <i class="mdi mdi-camera-timer"></i>
+                                        <span>Waktu Operasional</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="<?= base_url() ?>kelas/manage_holidays">
+                                        <i class="mdi mdi-calendar-remove"></i>
+                                        <span>Waktu Libur</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="<?= base_url() ?>sql">
+                                        <i class="mdi mdi-linux"></i>
+                                        <span>SQL Command</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="<?= base_url() ?>settings">
+                                        <i class="mdi mdi-application"></i>
+                                        <span>APP Settings</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="<?= base_url() ?>ota">
+                                        <i class="mdi mdi-airplane"></i>
+                                        <span>Over The Air</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
                 </div>
-                <!-- end sidebarinner -->
+                <div class="clearfix"></div>
             </div>
-            <!-- Left Sidebar End -->
+        </div>
             
 
             <!-- Start right Content here -->
@@ -270,10 +286,10 @@ if($this->session->userdata('userlogin'))
                             <li class="breadcrumb-item"><a href="#">Home</a></li>
                             <li class="breadcrumb-item"><a href="#">Daftar Kelas</a></li>
                             <li class="breadcrumb-item"><?= $kelas->kelas; ?></li>
-                            <li class="breadcrumb-item active">Rekap Absen</li>
+                            <li class="breadcrumb-item active">Rekap Presensi</li>
                         </ol>
                     </div>
-                    <h4 class="page-title">Rekap Absen</h4>
+                    <h4 class="page-title">Rekap Presensi</h4>
                 </div>
             </div>
             <div class="clearfix"></div>
@@ -283,7 +299,7 @@ if($this->session->userdata('userlogin'))
             <div class="col-md-12 col-xl-12">
                 <div class="card m-b-30">
                     <div class="card-body">
-                        <h4 class="mt-0 header-title">Rekapitulasi Absensi Kelas : <?php echo $kelas->kelas; ?></h4>
+                        <h4 class="mt-0 header-title">Rekapitulasi Presensi Kelas : <?php echo $kelas->kelas; ?></h4>
                         <div class="general-label">
                             <form action="" method="get">
                                 <div class="row mb-3">

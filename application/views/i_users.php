@@ -1,5 +1,5 @@
 <?php
-$this->load->View('include/header.php');
+$this->load->view('include/header.php');
 
 if ($set == "list-users") {
 ?>
@@ -17,7 +17,7 @@ if ($set == "list-users") {
                     </div>
                     <h4 class="page-title">List User</h4>
                 </div>
-                <a href="<?php base_url() ?>add_users">
+                <a href="<?php echo base_url('users/add_users'); ?>">
                     <button type="button" class="btn btn-success"><i class="fa fa-user-plus"></i> Tambah Users</button>
                 </a>
             </div>
@@ -33,7 +33,7 @@ if ($set == "list-users") {
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>Email</th>
+                                    <th>Nama</th>
                                     <th>Username</th>
                                     <th>Action</th>
                                 </tr>
@@ -53,8 +53,8 @@ if ($set == "list-users") {
                                             <td><?php echo $row->username; ?></td>
                                             <td>
                                                 <?php if ($row->id_user != 1) { ?>
-                                                    <a href="<?= base_url() ?>users/edit_users/<?= $row->id_user ?>" class="btn btn-success"><i class="fa fa-pencil"></i></a>
-                                                    <a href="<?= base_url() ?>users/hapus_users/<?= $row->id_user ?>" class="btn btn-danger" onclick="return confirm('Anda Yakin menghapus data ini?')"><i class="fa fa-trash-o"></i></a>
+                                                    <a href="<?php echo base_url('users/edit_users/' . $row->id_user); ?>" class="btn btn-success"><i class="fa fa-pencil"></i></a>
+                                                    <a href="<?php echo base_url('users/hapus_users/' . $row->id_user); ?>" class="btn btn-danger" onclick="return confirm('Anda Yakin menghapus data ini?')"><i class="fa fa-trash-o"></i></a>
                                                 <?php } ?>
                                             </td>
                                         </tr>
@@ -95,7 +95,7 @@ if ($set == "list-users") {
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Tambah Users</h5>
-                            <?php echo form_open_multipart(base_url() . 'users/save_users'); ?>
+                            <?php echo form_open_multipart(base_url('users/save_users')); ?>
                             <div class="box-body">
                                 <div class="form-group">
                                     <label>Nama Users</label>
@@ -156,7 +156,7 @@ if ($set == "list-users") {
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Edit</h5>
-                            <form role="form" action="<?= base_url(); ?>users/save_edit_users" enctype="multipart/form-data" method="post" accept-charset="utf-8">
+                            <form role="form" action="<?php echo base_url('users/save_edit_users'); ?>" enctype="multipart/form-data" method="post" accept-charset="utf-8">
                             <div class="box-body">
                                 <div class="form-group">
                                     <input type="hidden" name="id" value="<?php if (isset($id)) { echo $id; } ?>">
@@ -178,7 +178,7 @@ if ($set == "list-users") {
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <img src="<?= base_url(); ?>components/dist/img/<?php if (isset($avatar)) { echo $avatar; } ?>" width="auto" height="200px"><br>
+                                    <img src="<?php echo base_url('assets/images/' . $avatar); ?>" width="auto" height="200px"><br>
                                     <input type="hidden" name="img" value="<?php if (isset($avatar)) { echo $avatar; } ?>">
                                     <label for="InputFile">Pilih Foto ("jpg", "jpeg", "gif", "png")</label>
                                     <input type="file" name="image" id="InputFile">

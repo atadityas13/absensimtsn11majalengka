@@ -15,12 +15,12 @@ if($this->session->userdata('userlogin')) {
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
-    <title>Dashboard</title>
+    <title><?php echo get_settings('app_name'); ?></title>
     <meta content="wad Dashboard" name="description" />
     <meta content="Mannatthemes" name="author" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <link rel="shortcut icon" href="<?=base_url();?>assets/images/logo.png">
+    <link rel="shortcut icon" href="<?=base_url();?>assets/images/mts7.png">
 
     <!--Morris Chart CSS -->
     <link rel="stylesheet" href="<?=base_url();?>assets/plugins/fullcalendar/vanillaCalendar.css"/>
@@ -62,7 +62,7 @@ if($this->session->userdata('userlogin')) {
             <!-- LOGO -->
             <div class="topbar-left">
                 <div class="text-center">
-                    <a href="<?=base_url();?>wad/dashboard" class="logo"><i class="mdi mdi-assistant"></i> MTsN 11 Majalengka</a>
+                    <a href="<?=base_url();?>wad/dashboard" class="logo"><i class="mdi mdi-assistant"></i> <?php echo get_settings('school_name'); ?></a>
                 </div>
             </div>
 

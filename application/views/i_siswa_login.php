@@ -8,7 +8,7 @@
     <title>Login</title>
     <meta content="Admin Dashboard" name="description" />
     <meta content="Mannatthemes" name="author" />
-    <link rel="shortcut icon" href="<?= base_url(); ?>assets/images/logo.png">
+    <link rel="shortcut icon" href="<?= base_url(); ?>assets/images/mts7.png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
@@ -42,7 +42,7 @@
 
             <div class="p-6">
                 <div class="text-center pt-3">
-                    <img src="<?= base_url(); ?>assets/images/logogisaka.png" alt="logo" class="h-24 mx-auto">
+                    <img src="<?php echo base_url(get_settings('logo_path')); ?>" alt="logo" class="h-24 mx-auto">
                 </div>
 
                 <?php if ($this->session->flashdata('pesan')) : ?>

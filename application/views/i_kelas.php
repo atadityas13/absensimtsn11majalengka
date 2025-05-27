@@ -17,7 +17,6 @@ $this->load->view('include/header.php');
                     <h4 class="page-title">Class List</h4>
                 </div>
             </div>
-            <div class="clearfix"></div>
         </div>
 
         <div class="row">
@@ -32,7 +31,7 @@ $this->load->view('include/header.php');
                                     <div class="input-group">
                                         <input type="text" name="kelas" required placeholder="Nama Kelas" class="form-control">
                                     </div>
-                                </div>                                                                           
+                                </div>
                                 <div class="col-2">
                                     <button class="btn btn-primary" type="submit">Tambah</button>
                                 </div>
@@ -40,13 +39,13 @@ $this->load->view('include/header.php');
                         </form>
                     </div>
                 </div>
-            </div> 
+            </div>
         </div>
-                    
+
         <div class="row">
             <div class="col-12">
                 <div class="card m-b-30">
-                    <div class="card-body">            
+                    <div class="card-body">
                         <h4 class="mt-0 header-title">Class List</h4>
                         <table id="datatable-buttons" class="table table-striped table-bordered w-100">
                             <thead>
@@ -71,21 +70,21 @@ $this->load->view('include/header.php');
                                             <?php $jumlah_murid = $m_data->count_murid($row->id); ?>
                                             <td><?php echo $jumlah_murid; ?></td>
                                             <td>
-                                                <a href="<?= base_url() ?>kelas/lihat_kelas?id_kelas=<?= $row->id; ?>" class="btn btn-primary">
-                                                    <i class="fa fa-eye"></i>
-                                                </a>
-                                                <a href="<?= base_url() ?>/kelas/rekap_absen/<?= $row->id; ?>" class="btn btn-primary">
-                                                    <i class="fa fa-book"></i>
-                                                </a>
-                                                <a href="<?= site_url() ?>hapus_kelas?id_kelas=<?= $row->id; ?>" class="btn btn-danger" onclick="return confirm('Anda yakin menghapus data ini?')">
-                                                    <i class="fa fa-trash"></i>
-                                                </a>
+                                                <div class="btn-group mt-0 m-b-10">
+                                                    <button type="button" class="btn btn-info btn-raised dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Aksi</button>
+                                                    <div class="dropdown-menu">
+                                                        <a class="dropdown-item" href="kelas/lihat_kelas?id_kelas=<?= $row->id; ?>">Lihat Kelas</a>
+                                                        <a class="dropdown-item" href="<?= base_url() ?>/kelas/rekap_absen/<?= $row->id; ?>">Rekap Absensi</a>
+                                                        <div class="dropdown-divider"></div>
+                                                        <a class="dropdown-item" href="<?= site_url() ?>/kelas/hapus_kelas?id_kelas=<?= $row->id; ?>">Hapus Kelas</a>
+                                                    </div>
+                                                </div>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </tbody>
-                        </table>            
+                        </table>
                     </div>
                 </div>
             </div>

@@ -77,21 +77,9 @@ $db['default'] = array(
 	'dsn'	=> '',
 
 	 'hostname' => 'localhost',
-	  
-	
-
-	//'username' => 'root',
-//'password' => '',
-	//'database' => 'haha',
-
-
-	'username' => 'mtsnmaja_absensi',
-	'password' => 'Absensisiswa11',
-	'database' => 'mtsnmaja_absensiswa',
-	
-
-
-
+	'username' => 'root',
+	'password' => 'root',
+	'database' => 'mts11',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,

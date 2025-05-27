@@ -1,6 +1,7 @@
 <footer class="footer">
-    © 2024 Developed by Imam Dienul.
+    Keep Innovating 💡 | © 2024 Imam Dienul
 </footer>
+
 
 </div>
 <!-- End Right content here -->
@@ -19,6 +20,25 @@
         <script src="<?=base_url();?>assets/js/waves.js"></script>
         <script src="<?=base_url();?>assets/js/jquery.nicescroll.js"></script>
         <script src="<?=base_url();?>assets/js/jquery.scrollTo.min.js"></script>
+        <script src="<?=base_url();?>assets/plugins/dropify/js/dropify.min.js"></script>
+        <script src="<?=base_url();?>assets/pages/upload-init.js"></script>
+       
+
+
+
+        <script src="<?=base_url();?>assets/plugins/carousel/owl.carousel.min.js"></script>
+        <script src="<?=base_url();?>assets/plugins/fullcalendar/vanillaCalendar.js"></script>
+        <script src="<?=base_url();?>assets/plugins/peity/jquery.peity.min.js"></script>
+        <script src="<?=base_url();?>assets/plugins/jvectormap/jquery-jvectormap-2.0.2.min.js"></script>
+        <script src="<?=base_url();?>assets/plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+        <script src="<?=base_url();?>assets/plugins/chartist/js/chartist.min.js"></script>
+        <script src="<?=base_url();?>assets/plugins/chartist/js/chartist-plugin-tooltip.min.js"></script>
+        <script src="<?=base_url();?>assets/plugins/metro/MetroJs.min.js"></script>
+        <script src="<?=base_url();?>assets/plugins/raphael/raphael.min.js"></script>
+        <script src="<?=base_url();?>assets/plugins/morris/morris.min.js"></script>
+        <script src="<?=base_url();?>assets/pages/dashborad.js"></script>
+
+        
 
         <!-- Required datatable js -->
         <script src="<?=base_url();?>assets/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -35,12 +55,19 @@
         <!-- Responsive examples -->
         <script src="<?=base_url();?>assets/plugins/datatables/dataTables.responsive.min.js"></script>
         <script src="<?=base_url();?>assets/plugins/datatables/responsive.bootstrap4.min.js"></script>
+         <!--C3 Chart-->
+         <script src="<?=base_url();?>assets/plugins/d3/d3.min.js"></script>
+        <script src="<?=base_url();?>assets/plugins/c3/c3.min.js"></script>
+        <script src="<?=base_url();?>assets/pages/c3-chart-init.js"></script>
  
         <!-- Datatable init js -->
         <script src="<?=base_url();?>assets/pages/datatables.init.js"></script>
 
         <!-- App js -->
         <script src="<?=base_url();?>assets/js/app.js"></script>
+
+        <!-- Tambahkan script DataTables -->
+
         <script>
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('nav-search');
@@ -59,7 +86,10 @@ document.addEventListener('DOMContentLoaded', function() {
         { name: 'Menu Device', url: '<?= base_url(); ?>devices' },
         { name: 'Menu Waktu Operasional', url: '<?= base_url(); ?>setting' },
         { name: 'Menu SQL Command', url: '<?= base_url(); ?>sql' },
-        { name: 'Menu Waktu Libur', url: '<?= base_url(); ?>kelas/manage_holidays' }
+        { name: 'Menu Waktu Libur', url: '<?= base_url(); ?>kelas/manage_holidays' },
+        { name: 'Menu APP Settings', url: '<?= base_url(); ?>settings' },
+        { name: 'Menu OTA', url: '<?= base_url(); ?>ota' }
+        
         
     ];
 

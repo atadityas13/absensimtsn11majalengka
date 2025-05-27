@@ -75,6 +75,22 @@ class Izin_Model extends CI_Model {
     
         return $query->num_rows() > 0;
     }
+    public function is_present_today($nisn) {
+        $id_siswa = $this->get_id_siswa_by_nisn($nisn);
+        if (!$id_siswa) {
+            return false;
+        }
+    
+        $today_start = strtotime(date('Y-m-d 00:00:00'));
+        $today_end = strtotime(date('Y-m-d 23:59:59'));
+    
+        $this->db->where('id_siswa', $id_siswa);
+        $this->db->where('created_at >=', $today_start);
+        $this->db->where('created_at <=', $today_end);
+        $query = $this->db->get('absensi');
+    
+        return $query->num_rows() > 0;
+    }
 
     private function get_id_siswa_by_nisn($nisn) {
         $query = $this->db->get_where('siswa', array('nisn' => $nisn));
@@ -93,7 +109,7 @@ class Izin_Model extends CI_Model {
             'id_siswa' => $id_siswa,
             'keterangan' => $action,
             'foto' => '',
-            'created_at' => strtotime($tanggal)
+            'created_at' => time()
         );
     
         return $this->db->insert('absensi', $data);

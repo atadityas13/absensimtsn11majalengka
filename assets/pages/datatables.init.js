@@ -11,7 +11,6 @@ $(document).ready(function() {
 
     //Buttons examples
     var table = $('#datatable-buttons').DataTable({
-        resposive: true,
         lengthChange: false,
         buttons: ['copy', 'excel', 'pdf']
     });

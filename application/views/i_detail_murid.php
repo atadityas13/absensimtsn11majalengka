@@ -26,7 +26,7 @@
                     <div class="card-body">
                         <h1 class="mt-0 header-title d-flex justify-content-between align-items-center">
                             <?= $murid->nama; ?>
-                            <a href="<?= base_url() ?>/siswa/edit_siswa/<?= $murid->id_siswa ?>" class="btn btn-info btn-sm">
+                            <a href="<?= base_url() ?>/kelas/edit_siswa/<?= $murid->id_siswa ?>" class="btn btn-info btn-sm">
                                 Edit <i class="fa fa-pencil"></i>
                             </a>
                         </h1>
@@ -46,7 +46,7 @@
                                     </tr>
                                     <tr>
                                         <th scope="row">Tempat, Tanggal Lahir:</th>
-                                        <td><?= $murid->tanggal_lahir; ?></td>
+                                        <td><?=$murid->tempat_lahir . ", " . $murid->tanggal_lahir; ?></td>
                                     </tr>
                                     <tr>
                                         <th scope="row">Kelas:</th>
@@ -88,13 +88,10 @@
                             <td><strong>: <?= $murid->nama; ?></strong></td>
                         </tr>
                         <tr>
-                            <th><strong>tanggal_lahir</strong></th>
-                            <td><strong>: <?= $murid->tanggal_lahir; ?></strong></td>
+                            <th><strong>TTL</strong></th>
+                            <td><strong>: <?= $murid->tempat_lahir . ", " . $murid->tanggal_lahir; ?></strong></td>
                         </tr>
-                        <tr>
-                            <th><strong>NIK</strong></th>
-                            <td><strong>: <?= $murid->nik; ?></strong></td>
-                        </tr>
+                       
                         <tr>
                             <th><strong>NISN</strong></th>
                             <td><strong>: <?= $murid->nisn; ?></strong></td>
@@ -116,20 +113,20 @@
         max-height: 100vh;
         overflow-y: auto;
         padding: 10px;
-        margin-top: 70px; /* Adjust the value as needed to push content below the navbar */
+        margin-top: 70px;
     }
 
     .card.kartu-siswa {
         position: relative;
-        width: 85.6mm; /* Width of the card */
-        height: 54mm; /* Height of the card */
-        background-image: url('<?= base_url('assets/images/template.png'); ?>');
+        width: 85.6mm;
+        height: 54mm;
+        background-image: url('<?php echo base_url(get_settings('path_template_card')); ?>');
         background-size: cover;
         background-position: center;
         border-radius: 8px;
         border: 2px solid #000;
         box-sizing: border-box;
-        margin: 0 auto; /* Center horizontally */
+        margin: 0 auto;
         page-break-inside: avoid;
     }
 

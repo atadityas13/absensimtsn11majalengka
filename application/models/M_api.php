@@ -81,7 +81,13 @@ class M_api extends CI_Model {
     }
     
     
-
+    function get_siswa_by_id($id_siswa) {
+        $query = $this->db->where('id_siswa', $id_siswa);
+        $q = $this->db->get('siswa');
+        $data = $q->result();
+        
+        return $data;
+    } 
     function insert_absensi($data){
 		$this->db->insert('absensi', $data);
        return TRUE;
@@ -119,6 +125,19 @@ class M_api extends CI_Model {
 
         return TRUE;
     }
+    function count_absensi_last_two_weeks($id_siswa) {
+        $this->db->select('COUNT(*) as total');
+        $this->db->from('absensi');
+        $this->db->where('id_siswa', $id_siswa);
+        $this->db->where('created_at >=', date('Y-m-d H:i:s', strtotime('-2 weeks')));
+        $query = $this->db->get();
+        
+        if ($query->num_rows() > 0) {
+            return $query->row()->total;
+        }
+        return 0;
+    }
+    
 
 
 }

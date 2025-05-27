@@ -38,7 +38,7 @@ class Register extends CI_Controller {
             $config['upload_path'] = './uploads/';
             $config['allowed_types'] = 'gif|jpg|png|jpeg';
             $config['max_size'] = 0;
-            $config['file_name'] = strtolower(str_replace(' ', '_', $this->input->post('nama'))) . '_' . time(); // Set file name based on user's name
+            $config['file_name'] = strtolower(str_replace(' ', '_', $this->input->post('nama'))) . '_' . time(); 
     
             $this->upload->initialize($config);
     
@@ -59,18 +59,18 @@ class Register extends CI_Controller {
             // Process form data
             $data = array(
                 'nama' => $this->input->post('nama'),
-                'tempat_lahir' => $this->input->post('tempat'), // Tempat lahir dari input
-                'tanggal_lahir' => $this->input->post('tanggal_lahir'), // Tanggal lahir dari input
+                'tempat_lahir' => $this->input->post('tempat'),
+                'tanggal_lahir' => $this->input->post('tanggal_lahir'), 
                 'id_kelas' => $this->input->post('id_kelas'),
                 'nisn' => $this->input->post('nisn'),
-                'nik' => $this->input->post('nik'),
+                
                 'alamat' => $this->input->post('alamat'),
                 'foto' => isset($file_name) ? $file_name : NULL,
             );
     
             $this->Siswa->insert_siswa($data);
     
-            // Set flash data to display success message
+
             $this->session->set_flashdata('registered', true);
     
             // Redirect back to the form

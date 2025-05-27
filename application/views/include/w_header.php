@@ -15,12 +15,12 @@ if($this->session->userdata('userlogin')) {
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
-    <title>SI ATA</title>
+    <title><?php echo get_settings('school_name'); ?></title>
     <meta content="wad Dashboard" name="description" />
     <meta content="Mannatthemes" name="author" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <link rel="shortcut icon" href="<?=base_url();?>assets/images/gi.png">
+    <link rel="shortcut icon" href="<?php echo base_url(get_settings('favicon_path')); ?>">
 
     <!--Morris Chart CSS -->
     <link rel="stylesheet" href="<?=base_url();?>assets/plugins/fullcalendar/vanillaCalendar.css"/>
@@ -63,7 +63,7 @@ if($this->session->userdata('userlogin')) {
 <div class="topbar-left">
     <div class="text-center">
         <a href="<?= base_url(); ?>dashboard" class="logo">
-            <img src="<?php echo base_url(); ?>assets/images/logogisaka.png" alt="Logo" style="height: 40px;"> 
+            <img src="<?php echo base_url(); ?>assets/images/mts7.png" alt="Logo" style="height: 40px;"> 
            
         </a>
     </div>

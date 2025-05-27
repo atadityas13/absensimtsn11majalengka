@@ -136,7 +136,7 @@ class M_data extends CI_Model {
         }
         return FALSE;
     }
-
+    
     function get_absensi($ket,$today,$tomorrow){
         $this->db->select('*');
         $this->db->from('absensi');
@@ -266,9 +266,9 @@ class M_data extends CI_Model {
     }
     
     public function get_kelas_byrow() {
-        $query = $this->db->get('kelas'); 
-        return $query->num_rows();
+        return $this->db->get('kelas')->result();
     }
+    
 
     public function get_jam_masuk($id_siswa, $tanggal)
     {
@@ -500,6 +500,48 @@ public function siswa_tidak_hadir_3_hari_berturut_turut($id_kelas) {
     }
     
     return $siswa_tidak_hadir;
+}
+
+
+
+
+public function get_siswa_by_kelas($kelas_id) {
+    return $this->db->where('id_kelas', $kelas_id)->get('siswa')->result();
+}
+
+public function get_absensii($keterangan, $start, $end, $kelas_id = null) {
+    $this->db->select('absensi.*')
+             ->from('absensi')
+             ->join('siswa', 'siswa.id_siswa = absensi.id_siswa')
+             ->where('created_at >=', $start)
+             ->where('created_at <=', $end)
+             ->where('keterangan', $keterangan);
+    
+    if ($kelas_id) {
+        $this->db->where('siswa.id_kelas', $kelas_id);
+    }
+    
+    return $this->db->get()->result();
+}
+
+public function hitung_tidak_absensii($kelas_id = null) {
+    if ($kelas_id) {
+        $this->db->where('id_kelas', $kelas_id);
+    }
+    $total_siswa = $this->db->count_all_results('siswa');
+    
+    $this->db->select('DISTINCT(siswa.id_siswa)')
+             ->from('absensi')
+             ->join('siswa', 'siswa.id_siswa = absensi.id_siswa')
+             ->where('created_at >=', strtotime('today'))
+             ->where('created_at <=', strtotime('tomorrow'));
+    
+    if ($kelas_id) {
+        $this->db->where('siswa.id_kelas', $kelas_id);
+    }
+    
+    $hadir = $this->db->get()->num_rows();
+    return $total_siswa - $hadir;
 }
 
 

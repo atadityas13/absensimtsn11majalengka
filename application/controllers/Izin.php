@@ -25,6 +25,11 @@ class Izin extends CI_Controller {
         $data['siswa'] = $this->Izin_Model->get_siswa_by_kelas($id_kelas);
         $data['id_kelas'] = $id_kelas;
         
+        // Tambahkan pengecekan status kehadiran untuk setiap siswa
+        foreach ($data['siswa'] as $murid) {
+            $murid->is_present = $this->Izin_Model->is_present_today($murid->nisn);
+        }
+        
         if ($this->agent->is_mobile()) {
             $this->load->view('mobile/i_izin_detail_mobile', $data);
         } else {
@@ -42,9 +47,9 @@ class Izin extends CI_Controller {
         $nisn = $this->input->post('nisn');
         $id_devices = $this->input->post('id_devices');
         $tanggal = $this->input->post('tanggal');
-
+    
         $is_registered_nisn = $this->Izin_Model->is_registered_nisn($nisn);
-
+    
         if (!$is_registered_nisn) {
             $data['notification'] = [
                 'type' => 'error',
@@ -53,7 +58,7 @@ class Izin extends CI_Controller {
             ];
         } else {
             $is_already_absent = $this->Izin_Model->is_already_absent($nisn, $action, $tanggal);
-
+    
             if ($is_already_absent) {
                 $data['notification'] = [
                     'type' => 'warning',
@@ -77,15 +82,19 @@ class Izin extends CI_Controller {
                 }
             }
         }
-
+    
         $data['siswa'] = $this->Izin_Model->get_siswa_by_kelas($id_kelas);
         $data['id_kelas'] = $id_kelas;
+        
+        // Tambahkan pengecekan status kehadiran untuk setiap siswa
+        foreach ($data['siswa'] as $murid) {
+            $murid->is_present = $this->Izin_Model->is_present_today($murid->nisn);
+        }
         
         if ($this->agent->is_mobile()) {
             $this->load->view('mobile/i_izin_detail_mobile', $data);
         } else {
             $this->load->view('i_izin_detail', $data);
         }
-    }
-}
+    }}
 ?>

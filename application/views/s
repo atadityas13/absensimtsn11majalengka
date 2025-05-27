@@ -1,0 +1,593 @@
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include <ArduinoJson.h>
+#include <SPI.h>
+#include <FS.h>
+#include <SPIFFS.h>
+#include <MFRC522.h>
+#include <TFT_eSPI.h>
+#include <JPEGDecoder.h>
+#include <NTPClient.h>
+#include <WiFiUdp.h>
+#include <WebServer.h>
+#include <Preferences.h>
+
+// Pin Definitions
+#define TFT_MISO 19
+#define TFT_MOSI 23
+#define TFT_SCLK 18
+#define TFT_CS 15
+#define TFT_DC 2
+#define TFT_RST 4
+#define SS_PIN 12
+#define TOUCH_CS 21
+#define RST_PIN 22
+#define Buzzer 13
+
+// Global Objects
+TFT_eSPI tft = TFT_eSPI();
+MFRC522 siswa(SS_PIN, RST_PIN);
+WiFiUDP ntpUDP;
+WebServer server(80);
+Preferences preferences;
+NTPClient timeClient(ntpUDP, "id.pool.ntp.org", 25200);
+
+// Device Configuration Structure
+struct DeviceConfiguration {
+  char ssid[32] = "absen";
+  char password[32] = "absen12345";
+  char baseURL[100] = "http://absensi.imamdienul.com/api/";
+  char apiKey[50] = "asdkjWEQEDasd12ksnd";
+};
+
+DeviceConfiguration deviceConfig;
+
+// Global Variables
+const String iddev = "5";
+String baseURL = "";
+String apiKey = "";
+String hostMode = "";
+String hostSCAN = "";
+String hostADD = "";
+String ssid = "";
+String password = "";
+String ModeAlat = "";
+
+// Timing Variables
+unsigned long lastsiswaScan = 0;
+const unsigned long siswaScanInterval = 500;
+unsigned long lastDisplayTime = 0;
+const unsigned long DisplayInterval = 1000;
+
+// Keypad Configuration
+const int KEYPAD_COLS = 4;
+const int KEYPAD_ROWS = 3;
+bool showKeypad = false;
+String inputBuffer = "";
+
+struct ButtonLocation {
+  int x, y, width, height;
+  char key;
+};
+
+ButtonLocation keypadButtons[KEYPAD_ROWS * KEYPAD_COLS];
+
+const char keypadLayout[KEYPAD_ROWS][KEYPAD_COLS] = {
+    {'E', '1', '2', '3'},
+    {'0', '4', '5', '6'},
+    {'C', '7', '8', '9'}
+};
+
+const char* html_page = R"(
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ESP32 Device Configuration</title>
+    <style>
+        body { font-family: Arial; margin: 20px; background-color: #f0f0f0; }
+        .container { max-width: 400px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        input, button { display: block; margin: 10px 0; padding: 8px; width: 100%; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { background: #4CAF50; color: white; border: none; padding: 10px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #45a049; }
+        h1 { color: #333; text-align: center; }
+        .status { margin-top: 10px; text-align: center; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Device Configuration</h1>
+        <form action="/save" method="POST">
+            <h3>WiFi Settings</h3>
+            <input type="text" name="ssid" placeholder="WiFi SSID" required value="%SSID%">
+            <input type="password" name="password" placeholder="WiFi Password" required value="%PASSWORD%">
+            
+            <h3>Server Settings</h3>
+            <input type="text" name="baseurl" placeholder="Base URL" required value="%BASEURL%">
+            <input type="text" name="apikey" placeholder="API Key" required value="%APIKEY%">
+            
+            <button type="submit">Save Configuration</button>
+        </form>
+        <div class="status">
+            Current SSID: <span id="current_ssid">%SSID%</span><br>
+            IP Address: <span id="ip_address">%IP%</span>
+        </div>
+    </div>
+</body>
+</html>
+)";
+
+// Function Prototypes
+void connectToWiFi() {
+  Serial.print("Connecting to ");
+  Serial.println(credentials.ssid);
+  
+  tft.setTextDatum(MC_DATUM);
+  drawSdJpeg("/1.jpg", 0, 0);
+  tft.drawString("Connecting to", tft.width() / 2, 200);
+  tft.drawString(credentials.ssid, tft.width() / 2, 215);
+  
+  WiFi.begin(credentials.ssid, credentials.password);
+  
+  int attempt = 0;
+  while (WiFi.status() != WL_CONNECTED && attempt < 20) {
+    delay(500);
+    Serial.print(".");
+    attempt++;
+  }
+  
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("\nWiFi connected");
+    Serial.println("IP address: ");
+    Serial.println(WiFi.localIP());
+  } else {
+    Serial.println("\nFailed to connect. Starting AP mode...");
+    WiFi.softAP("ESP32-Config", "12345678");
+    Serial.println("AP Started");
+    Serial.print("AP IP address: ");
+    Serial.println(WiFi.softAPIP());
+  }
+}
+void handleRoot() {
+  String html = String(html_page);
+  html.replace("%SSID%", String(credentials.ssid));
+  html.replace("%IP%", WiFi.localIP().toString());
+  server.send(200, "text/html", html);
+}
+
+void handleSave() {
+  String new_ssid = server.arg("ssid");
+  String new_password = server.arg("password");
+  
+  // Save to preferences
+  preferences.putString("ssid", new_ssid);
+  preferences.putString("password", new_password);
+  
+  // Update current credentials
+  new_ssid.toCharArray(credentials.ssid, 32);
+  new_password.toCharArray(credentials.password, 32);
+  
+  server.send(200, "text/html", "Settings saved. Device will restart in 5 seconds...");
+  delay(2000);
+  ESP.restart();
+}
+void ModeDevice() {
+  HTTPClient http;
+  Serial.print("Request Link:");
+  Serial.println(hostMode);
+  http.begin(hostMode);
+  int httpCode = http.GET();
+  String payload = http.getString();
+  Serial.print("Response Code:");
+  Serial.println(httpCode);
+  Serial.print("Returned data from Server:");
+  Serial.println(payload);
+
+  if (httpCode == 200) {
+    DynamicJsonDocument doc(1024);
+    auto error = deserializeJson(doc, payload);
+    if (error) {
+      Serial.print(F("deserializeJson() failed with code "));
+      Serial.println(error.c_str());
+      return;
+    }
+
+    String responMode = doc["mode"].as<String>();
+    String responKet = doc["ket"].as<String>();
+
+    Serial.print("mode : ");
+    Serial.println(responMode);
+    Serial.print("ket : ");
+    Serial.println(responKet);
+    Serial.println("-------------------");
+
+    tft.setTextSize(0);
+    tft.setTextColor(TFT_WHITE);
+    tft.setTextDatum(MC_DATUM);
+    drawSdJpeg("/2.jpg", 0, 0);
+    tft.drawString("SISTEM ABSENSI RFID", tft.width() / 2, 195);
+
+    if (responMode == "SCAN") {
+      ModeAlat = "SCAN";
+      tft.drawString("SILAHKAN TEMPELKAN KARTU", tft.width() / 2, 215);
+
+    } else if (responMode == "ADD") {
+      ModeAlat = "ADD";
+      tft.drawString("SILAHKAN TEMPELKAN KARTU", tft.width() / 2, 215);
+
+    } else {
+      ModeAlat = "";
+      tft.drawString(responKet, tft.width() / 2, 20);
+    }
+  } else {
+    Serial.println("Error in response");
+  }
+  http.end();
+  delay(100);
+}
+
+void sendManualInput(String studentId) {
+    String host = hostSCAN;
+    host.replace("absensijson", "manualabsensijson");
+    host += "&id_siswa=" + studentId;
+
+    HTTPClient http;
+    Serial.print("Request Link:");
+    Serial.println(host);
+    http.begin(host);
+
+    int httpCode = http.GET();
+    String payload = http.getString();
+
+    if (httpCode == 200) {
+        DynamicJsonDocument doc(1024);
+        deserializeJson(doc, payload);
+
+        String responStatus = doc["status"].as<String>();
+        String responKet = doc["ket"].as<String>();
+
+        tft.fillScreen(TFT_BLACK);
+        tft.setTextColor(TFT_WHITE);
+        tft.drawString(responKet, tft.width() / 2, tft.height() / 2);
+        Titit(2, 200, 200);
+        delay(500);
+    }
+
+    http.end();
+}
+void sendsiswaData(String siswa) {
+  String host = (ModeAlat == "SCAN") ? hostSCAN : hostADD;
+  host += "&siswa=" + siswa;
+  HTTPClient http;
+  Serial.print("Request Link:");
+  Serial.println(host);
+  http.begin(host);
+  int httpCode = http.GET();
+  String payload = http.getString();
+  Serial.print("Response Code:");
+  Serial.println(httpCode);
+  Serial.print("Returned data from Server:");
+  Serial.println(payload);
+  if (httpCode == 200) {
+    DynamicJsonDocument doc(1024);
+    auto error = deserializeJson(doc, payload);
+    if (error) {
+      Serial.print(F("deserializeJson() failed with code "));
+      Serial.println(error.c_str());
+      return;
+    }
+    String responStatus = doc["status"].as<String>();
+    String responKet = doc["ket"].as<String>();
+    Serial.print("status : ");
+    Serial.println(responStatus);
+    Serial.print("ket : ");
+    Serial.println(responKet);
+    tft.drawString(responKet, tft.width() / 2, 80);
+  }
+  delay(500);
+  ModeDevice();
+}
+void drawSdJpeg(const char *filename, int xpos, int ypos) {
+  File jpegFile = SPIFFS.open(filename, FILE_READ);
+  if (!jpegFile) {
+    Serial.print("ERROR: File \"");
+    Serial.print(filename);
+    Serial.println("\" not found!");
+    return;
+  }
+  Serial.println("===========================");
+  Serial.print("Drawing file: ");
+  Serial.println(filename);
+  Serial.println("===========================");
+  bool decoded = JpegDec.decodeFsFile(jpegFile);
+  if (decoded) {
+    jpegRender(xpos, ypos);
+  } else {
+    Serial.println("Jpeg file format not supported!");
+  }
+}
+
+void jpegRender(int xpos, int ypos) {
+  uint16_t *pImg;
+  uint16_t mcu_w = JpegDec.MCUWidth;
+  uint16_t mcu_h = JpegDec.MCUHeight;
+  uint32_t max_x = JpegDec.width;
+  uint32_t max_y = JpegDec.height;
+
+  bool swapBytes = tft.getSwapBytes();
+  tft.setSwapBytes(true);
+
+  uint32_t min_w = jpg_min(mcu_w, max_x % mcu_w);
+  uint32_t min_h = jpg_min(mcu_h, max_y % mcu_h);
+
+  uint32_t win_w = mcu_w;
+  uint32_t win_h = mcu_h;
+
+  uint32_t drawTime = millis();
+
+  max_x += xpos;
+  max_y += ypos;
+
+  while (JpegDec.read()) {
+    pImg = JpegDec.pImage;
+
+    int mcu_x = JpegDec.MCUx * mcu_w + xpos;
+    int mcu_y = JpegDec.MCUy * mcu_h + ypos;
+
+    if (mcu_x + mcu_w <= max_x) win_w = mcu_w;
+    else win_w = min_w;
+
+    if (mcu_y + mcu_h <= max_y) win_h = mcu_h;
+    else win_h = min_h;
+
+    if ((mcu_x + win_w) <= tft.width() && (mcu_y + win_h) <= tft.height())
+      tft.pushImage(mcu_x, mcu_y, win_w, win_h, pImg);
+    else if ((mcu_y + win_h) >= tft.height())
+      JpegDec.abort();
+  }
+
+  tft.setSwapBytes(swapBytes);
+}
+void Titit(byte c, int wait1, int wait2);
+String getsiswa() {
+   String uid = "";
+    for (byte i = 0; i < siswa.uid.size; i++) {
+        uid += String(siswa.uid.uidByte[i] < 0x10 ? "0" : "");
+        uid += String(siswa.uid.uidByte[i], HEX);
+        if (i != siswa.uid.size - 1) {
+            uid += "-";
+        }
+    }
+    return uid;
+}
+
+void setup() {
+  Serial.begin(115200);
+  
+  preferences.begin("device-config", false);
+  
+  // Load configuration from preferences
+  if (preferences.getString("ssid", "").length() > 0) {
+    ssid = preferences.getString("ssid", "");
+    password = preferences.getString("password", "");
+    baseURL = preferences.getString("baseurl", "");
+    apiKey = preferences.getString("apikey", "");
+    
+    // Update deviceConfig struct
+    ssid.toCharArray(deviceConfig.ssid, 32);
+    password.toCharArray(deviceConfig.password, 32);
+    baseURL.toCharArray(deviceConfig.baseURL, 100);
+    apiKey.toCharArray(deviceConfig.apiKey, 50);
+  }
+
+  // Update host URLs
+  hostMode = baseURL + "getmodejson?key=" + apiKey + "&iddev=" + iddev;
+  hostSCAN = baseURL + "absensijson?key=" + apiKey + "&iddev=" + iddev;
+  hostADD = baseURL + "addcardjson?key=" + apiKey + "&iddev=" + iddev;
+
+  SPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, TFT_CS);
+  tft.init();
+  tft.setRotation(1);
+  siswa.PCD_Init();
+  pinMode(Buzzer, OUTPUT);
+  
+  if (!SPIFFS.begin(true)) {
+    Serial.println("SPIFFS Mount Failed");
+    return;
+  }
+
+  tft.setTextSize(0);
+  tft.setTextColor(TFT_WHITE);
+  tft.setFreeFont(&FreeSans9pt7b);
+  
+  connectToWiFi();
+  server.on("/", HTTP_GET, handleRoot);
+  server.on("/save", HTTP_POST, handleSave);
+  server.begin();
+
+  tft.drawString("IP: " + WiFi.localIP().toString(), tft.width() / 2, 235);
+  timeClient.begin();
+  delay(1000);
+  ModeDevice();
+}
+
+void drawKeypad() {
+  tft.fillScreen(TFT_BLACK);
+  
+  const int SCREEN_WIDTH = 320;
+  const int INPUT_HEIGHT = 30;
+  const int INPUT_WIDTH = 220;
+  const int INPUT_Y = 45;
+  const int INPUT_X = (SCREEN_WIDTH - INPUT_WIDTH) / 2;
+
+  const int BUTTON_WIDTH = 70;
+  const int BUTTON_HEIGHT = 35;
+  const int SPACING = 10;
+
+  int totalKeypadWidth = (KEYPAD_COLS * BUTTON_WIDTH) + ((KEYPAD_COLS - 1) * SPACING);
+  int startX = (SCREEN_WIDTH - totalKeypadWidth) / 2;
+  int startY = INPUT_Y + INPUT_HEIGHT + 30;
+
+  tft.fillRoundRect(INPUT_X, INPUT_Y, INPUT_WIDTH, INPUT_HEIGHT, 5, TFT_WHITE);
+  tft.setTextColor(TFT_BLACK);
+  tft.setTextDatum(MC_DATUM);
+
+  if (inputBuffer.isEmpty()) {
+    tft.setTextColor(TFT_DARKGREY);
+    tft.drawString("Kode Presensi :", INPUT_X + INPUT_WIDTH / 2, INPUT_Y + INPUT_HEIGHT / 2);
+  } else {
+    tft.setTextColor(TFT_BLACK);
+    tft.drawString(inputBuffer, INPUT_X + INPUT_WIDTH / 2, INPUT_Y + INPUT_HEIGHT / 2);
+  }
+
+  int buttonIndex = 0;
+  for (int row = 0; row < KEYPAD_ROWS; row++) {
+    for (int col = 0; col < KEYPAD_COLS; col++) {
+      int x = startX + (col * (BUTTON_WIDTH + SPACING));
+      int y = startY + (row * (BUTTON_HEIGHT + SPACING));
+      
+      uint16_t buttonColor = TFT_BLUE;
+      if (keypadLayout[row][col] == '3') buttonColor = TFT_GREEN;
+      if (keypadLayout[row][col] == '9') buttonColor = TFT_RED;
+
+      tft.fillRoundRect(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, 3, buttonColor);
+      tft.setTextColor(TFT_WHITE);
+      
+      String buttonText = mapKeypadLabel(keypadLayout[row][col]);
+      
+      tft.drawString(buttonText, x + BUTTON_WIDTH / 2, y + BUTTON_HEIGHT / 2);
+
+      keypadButtons[buttonIndex] = {x, y, BUTTON_WIDTH, BUTTON_HEIGHT, keypadLayout[row][col]};
+      buttonIndex++;
+    }
+  }
+}
+
+String mapKeypadLabel(char key) {
+  switch(key) {
+    case 'E': return "3";
+    case '1': return "2";
+    case '2': return "1";
+    case '3': return "Presensi";
+    case '0': return "6";
+    case '4': return "5";
+    case '5': return "4";
+    case '6': return "0";
+    case 'C': return "9";
+    case '7': return "8";
+    case '8': return "7";
+    case '9': return "Hapus";
+    default: return String(key);
+  }
+}
+
+void handleTouch() {
+  uint16_t x, y;
+  static unsigned long lastTapTime = 0;
+  const unsigned long debounceDelay = 50;
+
+  if (tft.getTouch(&x, &y)) {
+    if (millis() - lastTapTime < debounceDelay) return;
+    lastTapTime = millis();
+
+    const int SCREEN_WIDTH = 320;
+    const int SCREEN_HEIGHT = 240;
+
+    int rotatedX = SCREEN_WIDTH - x;
+    int rotatedY = SCREEN_HEIGHT - y;
+
+    x = rotatedX;
+    y = rotatedY;
+
+    if (!showKeypad) {
+      showKeypad = true;
+      drawKeypad();
+      return;
+    }
+
+    for (int i = 0; i < KEYPAD_ROWS * KEYPAD_COLS; i++) {
+      ButtonLocation& button = keypadButtons[i];
+
+      int xOffset = 10;
+      int yOffset = 10;
+
+      if (x >= (button.x - xOffset) && x < (button.x + button.width + xOffset) &&
+          y >= (button.y - yOffset) && y < (button.y + button.height + yOffset)) {
+
+        char key = button.key;
+
+        if (key == 'C') {
+          inputBuffer = "";
+        } else if (key == 'E') {
+          if (!inputBuffer.isEmpty()) {
+            sendManualInput(inputBuffer);
+            showKeypad = false;
+            inputBuffer = "";
+            ModeDevice();
+            return;
+          }
+        } else {
+          if (inputBuffer.length() < 3) {
+            inputBuffer += key;
+          }
+        }
+
+        drawKeypad();
+
+        digitalWrite(Buzzer, HIGH);
+        delay(50);
+        digitalWrite(Buzzer, LOW);
+
+        break;
+      }
+    }
+  }
+}
+
+void loop() {
+  server.handleClient();
+  timeClient.update();
+  unsigned long epochTime = timeClient.getEpochTime();
+  struct tm * timeinfo = gmtime((const time_t*)&epochTime);
+
+  if (millis() - lastDisplayTime >= DisplayInterval && (ModeAlat == "SCAN" || ModeAlat == "ADD")) {
+    lastDisplayTime = millis();
+
+    tft.fillRect(0, 0, tft.width(), 30, TFT_GREEN);
+    int xPos = (tft.width() - tft.textWidth("00:00:00", 2)) / 2;
+    tft.setCursor(xPos, 20);
+    tft.setTextColor(TFT_BLACK);
+    tft.setTextSize(1);
+    tft.printf("%02d:%02d:%02d", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+  }
+
+  handleTouch();
+
+  if (!showKeypad) {
+    if (ModeAlat == "SCAN" || ModeAlat == "ADD") {
+      if (millis() - lastsiswaScan >= siswaScanInterval) {
+        lastsiswaScan = millis();
+
+        if (siswa.PICC_IsNewCardPresent()) {
+          if (siswa.PICC_ReadCardSerial()) {
+            Serial.println("Card found");
+            String siswaUID = getsiswa();
+            Titit(2, 200, 200);
+            tft.setTextColor(TFT_WHITE);
+            tft.drawString(siswaUID + ".                             .", tft.width() / 2, 130);
+            sendsiswaData(siswaUID);
+          }
+        }
+        siswa.PICC_HaltA();
+      }
+    } else {
+      Serial.println("Tidak Mendapatkan MODE ALAT dari server");
+      Serial.println("Cek IP Server dan URL");
+      Serial.println("Restart ESP32");
+      
+      drawSdJpeg("/error.jpg", 0, 0);
+    }
+  }
+}
+
+// Fungsi-fungsi lainnya tetap sama seperti di versi sebelumnya
+// (termasuk connectToWiFi(), handleRoot(), handleSave(), ModeDevice(), dll.)
